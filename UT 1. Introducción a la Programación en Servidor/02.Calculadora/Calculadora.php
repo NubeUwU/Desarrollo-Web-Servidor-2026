@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Calculadora</title>
 </head>
 
 <!-- Bloque de codigo PHP -->
@@ -13,7 +13,7 @@
     $mensaje = "";
 
     /*Se verifica si el formulario ha sido enviado*/
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['calcular'])) {
 
         /* Variables para los números y la operación */
         $n1 = $_POST['n1'];
@@ -29,8 +29,8 @@
             'division' => $n2 != 0 ? $n1 / $n2 : "Error: No se puede dividir por cero",
         };
 
-        /* Se muestra el resultado de la operación */
-        $mensaje = "<h2>El resultado de la $operacion de  $n1 y $n2 es: $resultado </h2>";
+        /* Se crea el mensaje con el resultado */
+        $mensaje = "<h2>El resultado de la $operacion de $n1 y $n2 es: $resultado </h2>";
     }
 ?>
 
@@ -38,7 +38,7 @@
 <!-- Bloque de codigo HTML -->
 <body>
     <!-- Formulario HTML para la calculadora -->
-    <h1>Calculadora</h1><br><br>
+    <h1>Calculadora</h1>
     <form action="Calculadora.php" method="post">
         
         <!-- Primer Número -->
@@ -59,7 +59,7 @@
         </select>
 
         <!-- Botón para enviar el formulario -->
-        <input type="submit" value="Calcular">
+        <input type="submit" name="calcular" value="Calcular">
     </form>
 
     <!-- Se muestra el resultado de la operación -->
