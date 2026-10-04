@@ -1,165 +1,125 @@
 <?php
 
-$nombre = "";
-$email = "";
-$url = "";
-$comentario = "";
-$genero = "";
+// Inicializamos variables y un array para almacenar los errores
+$nombre = $email = $url = $comentario = $genero = "";
+$errores = []; 
 
+// Validacion de los datos del formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    // Guardamos los datos del formulario en variables
+    $nombre     = ucwords(trim($_POST["nombre"] ?? ""));
+    $email      = trim($_POST["email"] ?? "");
+    $url        = trim($_POST["url"] ?? "");
+    $comentario = trim($_POST["comentario"] ?? "");
+    $genero     = $_POST["genero"] ?? "";
 
-    $nombre = $_POST["nombre"];
-    $email = $_POST["email"];
-    $url = $_POST["url"];
-    $comentario = $_POST["comentario"];
-    $genero = $_POST["genero"] ?? "";
-
-    $errores = false;
-
+    // Validamos los datos de los campos
     if (empty($nombre)) {
-        $errores = true;
+        $errores['nombre'] = "Nombre es requerido";
     } elseif (!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/", $nombre)) {
-        $errores = true;
+        $errores['nombre'] = "Solo se permiten letras y espacios";
     }
 
     if (empty($email)) {
-        $errores = true;
+        $errores['email'] = "Correo electrónico es requerido";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errores = true;
+        $errores['email'] = "Formato de correo incorrecto";
     }
 
     if (!empty($url) && !filter_var($url, FILTER_VALIDATE_URL)) {
-        $errores = true;
+        $errores['url'] = "URL inválida";
     }
 
     if (empty($genero)) {
-        $errores = true;
+        $errores['genero'] = "Genero es requerido";
     }
-
-    $usuario = [
-        "nombre" => $nombre,
-        "email" => $email,
-        "url" => $url,
-        "comentario" => $comentario,
-        "genero" => $genero
-    ];
 }
-
 ?>
 
+
+
+<!-- HTML del formulario -->
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Registro</title>
+    <title>Document</title>
 </head>
-
 <body>
 
-    <h1>PHP Form Validation Example</h1>
-
-    <span style="color: red;">* required field.</span>
+    <h1>Formulario con Validaciones</h1>
+    <span style="color: red;">* Campos Requeridos</span>
     <br><br>
 
-    <form action="Ejercicio11.php" method="post">
+    <!-- Formulario -->
+    <form action="" method="post">
 
-        <label for="nombre">Name:</label>
-
-        <input type="text" name="nombre" id="nombre"
-            value="<?php echo $nombre; ?>">
-
+        <!-- Nombre -->
+        <label for="nombre">Nombre:</label>
+        <input type="text" name="nombre" id="nombre">
         <span style="color: red;">*</span>
-
-        <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && empty($nombre)) {
-            echo "<span style='color: red;'>Name is required</span>";
-        } elseif ($_SERVER["REQUEST_METHOD"] == "POST" && !preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/", $nombre)) {
-            echo "<span style='color: red;'>Solo se permiten letras y espacios en blanco</span>";
-        }
-        ?>
-
+        <span style="color: red;"><?php echo $errores['nombre'] ?? ''; ?></span>
         <br><br>
 
-
+        <!-- Email -->
         <label for="email">E-mail:</label>
-
-        <input type="text" name="email" id="email"
-            value="<?php echo $email; ?>">
-
+        <input type="text" name="email" id="email">
         <span style="color: red;">*</span>
-
-        <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && empty($email)) {
-            echo "<span style='color: red;'>Correo electrónico es requerido</span>";
-        } elseif ($_SERVER["REQUEST_METHOD"] == "POST" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            echo "<span style='color: red;'>Formato de correo electrónico incorrecto</span>";
-        }
-        ?>
-
+        <span style="color: red;"><?php echo $errores['email'] ?? ''; ?></span>
         <br><br>
 
-
-        <label for="url">Website:</label>
-
-        <input type="text" name="url" id="url"
-            value="<?php echo $url; ?>">
-
-        <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($url) && !filter_var($url, FILTER_VALIDATE_URL)) {
-            echo "<span style='color: red;'>URL invalida</span>";
-        }
-        ?>
-
+        <!-- URL -->
+        <label for="url">URL:</label>
+        <input type="text" name="url" id="url">
+        <span style="color: red;"><?php echo $errores['url'] ?? ''; ?></span>
         <br><br>
 
-
-        <label for="comentario">Comment:</label>
-
-        <textarea name="comentario" id="comentario"><?php echo $comentario; ?></textarea>
-
+        <!-- Comentario -->
+        <label for="comentario">Comentario:</label>
+        <textarea name="comentario" id="comentario"></textarea>
+        <span style="color: red;"></span>
         <br><br>
 
-
+        <!-- Genero -->
         <span>Genero:</span>
-
-        <input type="radio" name="genero" value="mujer"
-            <?php echo ($genero == "mujer") ? "checked" : ""; ?>>
-        Female
-
-        <input type="radio" name="genero" value="hombre"
-            <?php echo ($genero == "hombre") ? "checked" : ""; ?>>
-        Male
-
+        <input type="radio" name="genero" value="mujer"> Female
+        <input type="radio" name="genero" value="hombre"> Male
         <span style="color: red;">*</span>
-
-        <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && empty($genero)) {
-            echo "<span style='color: red;'>Gender is required</span>";
-        }
-        ?>
-
+        <span style="color: red;"><?php echo $errores['genero'] ?? ''; ?></span>
         <br><br>
 
+        <!-- Boton de envio -->
         <input type="submit" value="Submit">
-
     </form>
 
 
-    <?php
-
+<?php
+    // Mostramos los resultados
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
         echo "<h3>Tus datos:</h3>";
 
-        foreach ($usuario as $campo => $dato) {
-            echo $campo . ": " . $dato . "<br>";
+        if (!empty($nombre) && !isset($errores['nombre'])) {
+            echo "Nombre: " . htmlspecialchars($nombre) . "<br>";
+        }
+
+        if (!empty($email) && !isset($errores['email'])) {
+            echo "Email: " . htmlspecialchars($email) . "<br>";
+        }
+
+        if (!empty($url) && !isset($errores['url'])) {
+            echo "URL: " . htmlspecialchars($url) . "<br>";
+        }
+
+        if (!empty($comentario) && !isset($errores['comentario'])) {
+            echo "Comentario: " . htmlspecialchars($comentario) . "<br>";
+        }
+
+        if (!empty($genero) && !isset($errores['genero'])) {
+            echo "Género: " . htmlspecialchars($genero) . "<br>";
         }
     }
-
-    ?>
+?>
 
 </body>
-
 </html>
