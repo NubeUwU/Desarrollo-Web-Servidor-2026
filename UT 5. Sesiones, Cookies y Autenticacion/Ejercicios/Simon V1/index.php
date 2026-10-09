@@ -1,3 +1,4 @@
+<!-- Bloque PHP -->
 <?php
 require_once 'funciones.php';
 
@@ -10,7 +11,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Recogemos las variables del formulario y las guardamos
     $circulos = $_POST['cantidad'];
-    $col_total = array_slice($colores, 0, $_POST['col']);
+    $color = $_POST['col'];
+
+    $col_total = array_slice($colores, 0, $color);
 
     // Llamamos a la funcion que crea y pinta los circulos y los mostramos
     echo "<h1>Su jugada es:</h1><br>";
@@ -19,6 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 else { 
 ?>
+
+<!-- Bloque HTML -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -29,7 +34,7 @@ else {
 </head>
 <body>
 
-    <h1>Bienvenido al juego del Simon Dice</h1>
+    <h1>Bienvenido al Simon</h1>
 
     <form action="index.php" method="post">
 
@@ -56,7 +61,7 @@ else {
         <br><br>
 
         <!-- Boton de enviar -->
-        <input type="submit" value="Jugar">
+        <input type="submit" name="jugar" value="Jugar">
     </form>
 
 </body>
