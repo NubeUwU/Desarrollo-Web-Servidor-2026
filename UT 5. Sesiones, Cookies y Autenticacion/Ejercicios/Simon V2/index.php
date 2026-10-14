@@ -11,14 +11,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     shuffle($listaColores);
 
     // Recogemos las variables del formulario y las guardamos
-    $_SESSION['circulos'] = $_POST['cCirculos'];
-    $_SESSION['colores'] = $_POST['cColores'];
+    $_SESSION['circulos'] = $_POST[$circulos];
+    $_SESSION['col_total'] = $col_total;
 
-    $col_total = array_slice($listaColores, 0, $_SESSION['colores']);
+    $col_total = array_slice($listaColores, 0, $color);
 
-    $_SESSION['combinacion'] = pintar_circulos($_SESSION['circulos'], $col_total);
-    header('Location: mostrar_combinacion.php');
-    
+    // Llamamos a la funcion que crea y pinta los circulos y los mostramos
+    echo "<h1>Su jugada es:</h1><br>";
+    pintar_circulos($circulos, $col_total);
+
+    // Boton para volver a jugar
+    echo '<br><br><a href="mostrar_combinacion.php">Jugar</a>';
+
 }   
 
 else { 
