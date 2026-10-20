@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once 'funciones.php'
+include_once 'funciones.php';
 
 // Creamos una jugada, del mismo tamaño que la combinacion usada previamente
 $_SESSION['jugada'] = array_fill(0, count($_SESSION['combinacion']), '#000000');
