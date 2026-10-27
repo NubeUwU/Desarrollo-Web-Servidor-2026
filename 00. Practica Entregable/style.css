@@ -1,0 +1,90 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    color: #17324d;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+/* Contenedor principal */
+.contenedor {
+    width: 430px;
+    max-width: calc(100% - 40px);
+    border: 2px solid #cbd2da;
+    padding: 10px 15px 15px;
+    box-sizing: border-box;
+    background-color: white;
+}
+
+/* Nombre de la pantalla */
+.pantalla {
+    text-align: center;
+    color: #555;
+    margin: 0;
+    padding-bottom: 8px;
+    border-bottom: 2px dashed #ccc;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+/* Título */
+h1 {
+    text-align: center;
+    font-size: 22px;
+    margin: 10px 0 14px;
+    color: #17324d;
+}
+
+/* Filas de los campos */
+.campo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.campo label {
+    width: 83px;
+    flex-shrink: 0;
+    font-size: 16px;
+}
+
+.campo input {
+    width: 163px;
+    height: 19px;
+    box-sizing: border-box;
+    border: 2px solid #999;
+    padding: 2px;
+}
+
+/* Mensajes de error */
+.error {
+    color: red;
+    margin: -15px 0 15px;
+    font-size: 14px;
+}
+
+/* Botones */
+.botones {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.botones button {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #17324d;
+    padding: 5px 12px;
+    border: 2px solid #999;
+    border-radius: 5px;
+    background-color: #eee;
+    cursor: pointer;
+}
+
+.botones button:hover {
+    background-color: #ddd;
+}
