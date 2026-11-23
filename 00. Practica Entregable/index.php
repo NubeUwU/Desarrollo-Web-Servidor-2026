@@ -7,17 +7,13 @@ require_once 'funciones.php';
 $pdo = require 'conexion.php';
 
 // Creamos los errores vacios
-$errorUsuario = "";
-$errorPassword = "";
-
+$errores = [];
 
 // Si se ha enviado el formulario, se procesan los datos
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuario = trim($_POST['usuario'] ?? '');
     $password = $_POST['password'] ?? '';
     $accion = $_POST['accion'] ?? '';
-    $errorUsuario = "";
-    $errorPassword = "";
 
 
     // Si el usuario presiona "Registrarse", redirigimos de inmediato
@@ -26,26 +22,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-
-    // Validaciones
-
+    // Validaciones Usuario
     // Nombre
     if (
         $usuario === '' ||
         mb_strlen($usuario, 'UTF-8') > 20 ||
         !preg_match('/^[A-Za-z0-9_.@ñÑ-]+$/u', $usuario)
     ) {
-        $errorUsuario = '<p style="color: red;">El usuario está vacío o contiene caracteres no permitidos.</p>';
+        $errores['usuario'] = '<p style="color: red;">El usuario está vacío o contiene caracteres no permitidos.</p>';
     }
 
     // Contraseña
     if ($password === '') {
-        $errorPassword = '<p style="color: red;">Debes introducir una contraseña.</p>';
+        $errores['password'] = '<p style="color: red;">Debes introducir una contraseña.</p>';
     }
 
 
     // Si no hay errores, comprueba si el usuario existe
-    if ($errorUsuario === '' && $errorPassword === '' && $accion === 'entrar') {
+    if (empty($errores) && $accion === 'entrar') {
         $resultado = comprobarUsuario($pdo, $usuario, $password);
 
         if ($resultado !== false) {
@@ -63,14 +57,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header("Location: admin.php");
                     exit;
                 } elseif ($resultado['rol'] == 0) {
-                    header("Location: agenda.php");
+                    header("Location: inicio.php");
                     exit;
                 }
             }
             
         } else {
             // Si no existe el usuario o la contraseña es incorrecta, muestra un mensaje de error
-            $errorPassword = '<p style="color: red;">El usuario o la contraseña no existen.</p>';
+            $errores['password'] = '<p style="color: red;">El usuario o la contraseña no existen.</p>';
         }
     }
 }
@@ -84,17 +78,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda</title>
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="contenedor">
-        <p class="pantalla">PANTALLA: index.php</p>
+    <div style="text-align: center;">
 
         <h1>AGENDA DE CONTACTOS</h1>
 
         <form method="POST" action="index.php">
 
-            <div class="campo">
+            <div>
                 <label for="usuario">USUARIO:</label>
                 <input type="text" id="usuario" name="usuario"
                        maxlength="20"
@@ -103,23 +95,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                        required>
             </div>
 
-            <?php echo $errorUsuario; ?>
+            <?php echo $errores['usuario'] ?? ''; ?>
+            <br>
 
-            <div class="campo">
+            <div>
                 <label for="password">CLAVE:</label>
                 <input type="password" name="password"
                        autocomplete="off" required>
             </div>
 
-            <?php echo $errorPassword; ?>
+            <?php echo $errores['password'] ?? ''; ?>
+            <br>
 
-            <div class="botones">
+            <div>
                 <button type="submit" name="accion" value="entrar">Entrar</button>
                 <button type="submit" name="accion" value="registrarse"
                         formnovalidate>Registrarse</button>
             </div>
 
         </form>
+        <?php echo mostrarEmojis(emojis); ?>
     </div>
 </body>
 </html>

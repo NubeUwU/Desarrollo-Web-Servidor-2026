@@ -37,3 +37,6 @@ INSERT INTO usuarios(nombre, clave, rol) VALUES
 ('admin', '$2y$10$mq1dQkcWidDUsbkCtMOoPe1UjfiTvjMGNdJ5KDY/8S5BCoNcnuj6K' , 1), -- Admin123*
 ('marcos', '$2y$10$ljBO4fiGCMlbYWPebKfdWu0C4B0b3tcEo3r74jqusBj4MOR5mY2MC' , 0 ), -- ABC1234*
 ('yolanda', '$2y$10$WWbm/75eaUjsPL1vc8bDdevb6KA5txMg2miVtBjJwHlfe3KIhxgYS' , 0); -- Yolandais2026*
+
+-- Insertamos unos datos de configuracion iniciales
+INSERT INTO configuracion(max_lote, num_emojis, max_contactos) VALUES (5,6,10);
