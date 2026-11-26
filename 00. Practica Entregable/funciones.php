@@ -14,6 +14,14 @@ const emojis = [
     "U+26A1",
 ];
 
+function emojisDisponibles(int $num): array {
+    return array_slice(emojis, 0, $num);
+}
+
+function emojiAleatorio(array $emojis): string {
+    return $emojis[array_rand($emojis)];
+}
+
 function mostrarEmojis(array $emojis): string {
     $html = '';
     foreach ($emojis as $emoji) {
@@ -22,8 +30,76 @@ function mostrarEmojis(array $emojis): string {
     return $html;
 }
 
+function pintarFormularioContacto(int $i, string $emoji, array $valores, array $errores): string {
+    $emojiHtml = mostrarEmojis([$emoji]);
+
+    $nombre    = htmlspecialchars($valores['nombre'] ?? '');
+    $apellidos = htmlspecialchars($valores['apellidos'] ?? '');
+    $telefono  = htmlspecialchars($valores['telefono'] ?? '');
+    $email     = htmlspecialchars($valores['email'] ?? '');
+
+    $errNombre    = isset($errores['nombre'])    ? "<span class='error'>" . htmlspecialchars($errores['nombre']) . "</span>" : "";
+    $errApellidos = isset($errores['apellidos']) ? "<span class='error'>" . htmlspecialchars($errores['apellidos']) . "</span>" : "";
+    $errTelefono  = isset($errores['telefono'])  ? "<span class='error'>" . htmlspecialchars($errores['telefono']) . "</span>" : "";
+    $errEmail     = isset($errores['email'])     ? "<span class='error'>" . htmlspecialchars($errores['email']) . "</span>" : "";
+
+    return <<<HTML
+    <div class="bloque-contacto">
+        <div class="emoji-col">{$emojiHtml}</div>
+        <div class="campos-col">
+            <div class="fila-inputs">
+                <label>
+                    Nombre
+                    <input type="text" name="contactos[{$i}][nombre]" value="{$nombre}">
+                    {$errNombre}
+                </label>
+                <label>
+                    Apellidos
+                    <input type="text" name="contactos[{$i}][apellidos]" value="{$apellidos}">
+                    {$errApellidos}
+                </label>
+            </div>
+            <div class="fila-inputs">
+                <label>
+                    Teléfono
+                    <input type="text" name="contactos[{$i}][telefono]" value="{$telefono}">
+                    {$errTelefono}
+                </label>
+                <label>
+                    Email
+                    <input type="text" name="contactos[{$i}][email]" value="{$email}">
+                    {$errEmail}
+                </label>
+            </div>
+        </div>
+    </div>
+HTML;
+}
+
 
 // FUNCIONES USUARIOS
+
+function registrarUsuario($pdo, string $usuario, string $password): int|false {
+    $sqlCheck = "SELECT COUNT(*) FROM usuarios WHERE nombre = ?";
+    $stmtCheck = $pdo->prepare($sqlCheck);
+    $stmtCheck->execute([$usuario]);
+
+    if ((int)$stmtCheck->fetchColumn() > 0) {
+        return false; 
+    }
+
+    $claveHash = password_hash($password, PASSWORD_ARGON2ID);
+    $sqlInsert = "INSERT INTO usuarios (nombre, clave, rol) VALUES (?, ?, 0)";
+    $stmtInsert = $pdo->prepare($sqlInsert);
+
+    if ($stmtInsert->execute([$usuario, $claveHash])) {
+        return (int)$pdo->lastInsertId();
+    }
+
+    return false;
+}
+
+
 function comprobarUsuario($pdo, $usuario, $password) {
     $sql = "SELECT codigo, nombre, clave, rol FROM usuarios WHERE nombre = ?";
     $stmt = $pdo->prepare($sql);
@@ -55,6 +131,58 @@ function obtenerDatosUsuarios($pdo) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function actualizarContactosUsuario($pdo, int $codigoUsuario, array $lote): bool {
+    $fechaActual = date('Y-m-d H:i:s');
+
+    try {
+        $pdo->beginTransaction();
+
+        $sql = "INSERT INTO contactos (codigousu, emoji, nombre, apellidos, telefono, email, fecha) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+
+        foreach ($lote as $contacto) {
+            $stmt->execute([
+                $codigoUsuario,
+                $contacto['emoji'],
+                $contacto['nombre'],
+                $contacto['apellidos'],
+                $contacto['telefono'],
+                $contacto['email'],
+                $fechaActual
+            ]);
+        }
+
+        $pdo->commit();
+        return true;
+
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        return false;
+    }
+}
+
+function contarContactosUsuario($pdo, int $codigoUsuario): int {
+    $sql = "SELECT COUNT(*) FROM contactos WHERE codigousu = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$codigoUsuario]);
+    return (int)$stmt->fetchColumn();
+}
+
+function cantidadContactosTotales($pdo): array {
+    $sql = "SELECT u.codigo, u.nombre, COUNT(c.id) AS total_contactos, MAX(c.fecha) AS ultima_fecha
+            FROM usuarios u
+            LEFT JOIN contactos c ON u.codigo = c.codigousu
+            GROUP BY u.codigo, u.nombre
+            ORDER BY total_contactos DESC";
+    $stmt = $pdo->query($sql);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+
 
 // FUNCIONES CONFIGURACION
 function comprobarConfiguracion($pdo) {
@@ -71,7 +199,7 @@ function comprobarConfiguracion($pdo) {
         ];
     }
 
-    // Si no hay resultados, pone por defecto estos
+    // Si no hay resultados, pone estos valores por defecto
     return [
         'max_lote' => 5,
         'num_emojis' => 6,

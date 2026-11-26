@@ -6,8 +6,9 @@ session_start();
 require_once 'funciones.php';
 $pdo = require 'conexion.php';
 
-// Creamos los errores vacios
+// Creamos las variables
 $errores = [];
+$usuario = '';
 
 // Si se ha enviado el formulario, se procesan los datos
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -15,35 +16,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $accion = $_POST['accion'] ?? '';
 
-
-    // Si el usuario presiona "Registrarse", redirigimos de inmediato
+    // Si el usuario presiona "Registrarse" cambia a registro.php
     if ($accion === 'registrarse') {
         header("Location: registro.php");
         exit;
     }
 
     // Validaciones Usuario
-    // Nombre
     if (
         $usuario === '' ||
         mb_strlen($usuario, 'UTF-8') > 20 ||
         !preg_match('/^[A-Za-z0-9_.@ñÑ-]+$/u', $usuario)
     ) {
-        $errores['usuario'] = '<p style="color: red;">El usuario está vacío o contiene caracteres no permitidos.</p>';
+        $errores['usuario'] = '<p class="error">El usuario está vacío o contiene caracteres no permitidos.</p>';
     }
 
-    // Contraseña
+    // Validaciones Contraseña
     if ($password === '') {
-        $errores['password'] = '<p style="color: red;">Debes introducir una contraseña.</p>';
+        $errores['password'] = '<p class="error">Debes introducir una contraseña.</p>';
     }
-
 
     // Si no hay errores, comprueba si el usuario existe
     if (empty($errores) && $accion === 'entrar') {
         $resultado = comprobarUsuario($pdo, $usuario, $password);
 
         if ($resultado !== false) {
-            // Regeneramos el id de sesion
             if ($resultado['rol'] == 1 || $resultado['rol'] == 0) {
                 session_regenerate_id(true);
 
@@ -51,6 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['codigo'] = $resultado['codigo'];
                 $_SESSION['usuario'] = $resultado['usuario'];
                 $_SESSION['rol'] = $resultado['rol'];
+
+                // Limpiamos posibles datos viejos
+                unset($_SESSION['emojis'], $_SESSION['num']);
 
                 // Redirigimos segun el rol
                 if ($resultado['rol'] == 1) {
@@ -61,60 +61,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 }
             }
-            
         } else {
-            // Si no existe el usuario o la contraseña es incorrecta, muestra un mensaje de error
-            $errores['password'] = '<p style="color: red;">El usuario o la contraseña no existen.</p>';
+            $errores['password'] = '<p class="error">El usuario o la contraseña no existen.</p>';
         }
     }
 }
 ?>
-
-
-<!-- HTML -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
     <title>Agenda</title>
 </head>
 <body>
-    <div style="text-align: center;">
+    <div class="caja">
 
         <h1>AGENDA DE CONTACTOS</h1>
 
         <form method="POST" action="index.php">
 
-            <div>
+            <div class="campo-login">
                 <label for="usuario">USUARIO:</label>
                 <input type="text" id="usuario" name="usuario"
+                       value="<?php echo htmlspecialchars($usuario); ?>"
                        maxlength="20"
                        pattern="[A-Za-z0-9_.@ñÑ-]+"
-                       title="Solo letras, números, puntos, arrobas y guiones." autocomplete= "off"
+                       title="Solo letras, números, puntos, arrobas y guiones."
+                       autocomplete="off"
                        required>
             </div>
 
+            <!-- Se muestran los errores del usuario -->
             <?php echo $errores['usuario'] ?? ''; ?>
-            <br>
 
-            <div>
+        
+            <div class="campo-login">
                 <label for="password">CLAVE:</label>
-                <input type="password" name="password"
+                <input type="password" id="password" name="password"
                        autocomplete="off" required>
             </div>
 
+            <!-- Se muestran los errores de la contraseña -->
             <?php echo $errores['password'] ?? ''; ?>
-            <br>
 
-            <div>
+            <div class="botones-login">
                 <button type="submit" name="accion" value="entrar">Entrar</button>
-                <button type="submit" name="accion" value="registrarse"
-                        formnovalidate>Registrarse</button>
+                <button type="submit" name="accion" value="registrarse" formnovalidate>Registrarse</button>
             </div>
 
         </form>
-        <?php echo mostrarEmojis(emojis); ?>
     </div>
 </body>
 </html>

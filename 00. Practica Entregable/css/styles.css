@@ -1,0 +1,174 @@
+/* Estilos generales */
+body {
+  font-family: Arial, sans-serif;
+  color: #222;
+  text-align: center;
+}
+
+.caja {
+  max-width: 650px;
+  margin: 30px auto;
+  padding: 25px;
+  border: 1px solid #bbb;
+  text-align: center;
+}
+
+h2 {
+  margin-top: 0;
+  letter-spacing: 0.5px;
+}
+
+input[type="submit"],
+button {
+  padding: 8px 18px;
+  font-size: 14px;
+  margin: 0 4px;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+.acierto {
+  color: green;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+/* Inicio y Grabado (Emojis) */
+.emojis-lista {
+  font-size: 42px;
+  margin: 18px 0;
+}
+
+.emojis-lista .emoji {
+  margin: 0 6px;
+}
+
+.emojis-inline {
+  font-size: 24px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* Agenda (Tarjetas de 2 en 2) */
+.grid-contactos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  max-width: 1100px;
+  margin: 20px auto;
+  text-align: left;
+}
+
+.bloque-contacto {
+  display: flex;
+  align-items: center;
+  border: 1px solid #999;
+  padding: 12px;
+  border-radius: 5px;
+}
+
+.emoji-col {
+  font-size: 36px;
+  margin-right: 18px;
+}
+
+.campos-col {
+  flex: 1;
+}
+
+.fila-inputs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.fila-inputs label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+.fila-inputs input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Totales y Tablas */
+table {
+  border-collapse: collapse;
+  margin: 15px auto;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #888;
+  padding: 6px 12px;
+  text-align: left;
+}
+
+th {
+  text-align: center;
+}
+
+.activa {
+  background-color: #fff4cc;
+  font-weight: bold;
+}
+
+.barra {
+  height: 15px;
+  background-color: #2b579a;
+}
+
+.enlaces {
+  margin-top: 20px;
+}
+
+.enlaces a {
+  margin: 0 10px;
+}
+
+/* Login (index.php) */
+.campo-login {
+  margin: 12px 0;
+}
+
+.campo-login label {
+  display: inline-block;
+  width: 90px;
+  text-align: right;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.botones-login {
+  margin-top: 18px;
+}
+
+/* Panel de Administración (admin.php) */
+.form-admin {
+  text-align: left;
+  margin: 15px auto;
+}
+
+.campo-admin {
+  margin: 8px 0;
+}
+
+.campo-admin input {
+  width: 110px;
+  margin: 0 6px;
+}
+
+.boton-admin {
+  text-align: center;
+  margin: 14px 0;
+}
